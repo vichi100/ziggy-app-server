@@ -56,8 +56,10 @@ app.post("/addNewRestaurant", (request, response) => {
         speciality: reqObj.restaurant_details.speciality,
         primary_mobile: reqObj.restaurant_details.mobile,
         mobiles: reqObj.restaurant_details.other_mobile,
-        longitude: reqObj.restaurant_details.longitude,
-        latitude: reqObj.restaurant_details.latitude,
+        location: {
+            type: "Point",
+            coordinates: [Number(reqObj.restaurant_details.longitude), Number(reqObj.restaurant_details.latitude)]
+        },
         address: {
             address_line: reqObj.restaurant_details.address,
             area: reqObj.restaurant_details.city,
@@ -66,15 +68,19 @@ app.post("/addNewRestaurant", (request, response) => {
             pincode: reqObj.restaurant_details.pincode,
             state: reqObj.restaurant_details.state
 
-        }
+        },
+        rating: null
 
     }
     console.log("menu_with_dish_list: ", JSON.parse(JSON.stringify(reqObj.menu_with_dish_list)))
+    reqObj.menu_with_dish_list.map(item => {
+        item["rating"] = null;
+    })
     const menuObj = {
         id: nanoid(),
         restaurent_id: restaurantObj.id,
         restaurent_name: restaurantObj.name,
-        items: reqObj.menu_with_dish_list
+        items: reqObj.menu_with_dish_list,
     }
     database.collection("restaurant").insertOne(restaurantObj).then(result => {
         database.collection("menu").insertOne(menuObj).then(result => {
