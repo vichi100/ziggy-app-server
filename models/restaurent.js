@@ -21,5 +21,7 @@ Restaurent = {
         account_holder_name: String,
         account_type: String,
         bank_ifsc_code: String,
-    }
+    },
+    free_delivery_distance: Number,
+    paid_delivery_distance: Number
 }

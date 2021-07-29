@@ -46,6 +46,18 @@ app.listen(5000, () => {
     });
 });
 
+
+app.post('/getNearByRestaurant', function (req, res) {
+    console.log('getNearByRestaurant');
+    getNearByRestaurant(req, res);
+});
+
+app.post('/getMenuByRestaurantId', function (req, res) {
+    console.log('getMenuByRestaurantId');
+    getMenuByRestaurantId(req, res);
+});
+
+
 app.post("/addNewRestaurant", (request, response) => {
     console.log("Request: ", JSON.parse(JSON.stringify(request.body)));
     const reqObj = JSON.parse(JSON.stringify(request.body));
@@ -107,3 +119,50 @@ app.post("/addNewRestaurant", (request, response) => {
     //     response.send(result.result);
     // });
 });
+
+
+
+const getNearByRestaurant = (req, res) => {
+    const reqObj = JSON.parse(JSON.stringify(req.body));
+    console.log(JSON.stringify(req.body))
+    const locationX = reqObj.user_location;
+    console.log(JSON.stringify(locationX))
+    database.collection("restaurant").find({
+        location:
+        {
+            $near:
+            {
+                $geometry: locationX,
+                $minDistance: 10,
+                $maxDistance: 500000
+            }
+        }
+    }).toArray().then(result => {
+        console.log(JSON.stringify(result));
+        res.send(result);
+        res.end();
+    }).catch(err => {
+        console.error(`addNewRestaurant# Failed to insert documents : ${err}`);
+        res.send([]);
+        res.end();
+        return;
+    })
+
+
+}
+
+const getMenuByRestaurantId = (req, res) => {
+    const reqObj = JSON.parse(JSON.stringify(req.body));
+    console.log(JSON.stringify(req.body));
+    database.collection("menu").findOne({ restaurent_id: reqObj.restaurant_id }).then(result => {
+        console.log(JSON.stringify(result));
+        res.send(result);
+        res.end();
+    }).catch(err => {
+        console.error(`addNewRestaurant# Failed to insert documents : ${err}`);
+        res.send([]);
+        res.end();
+        return;
+    })
+
+}
